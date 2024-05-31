@@ -1,4 +1,5 @@
-import { Box, Container, Flex, Heading, Image, SimpleGrid, Text, VStack } from "@chakra-ui/react";
+import { useState } from "react";
+import { Box, Container, Flex, Heading, Image, SimpleGrid, Text, VStack, Input, Select, Button } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 
 const properties = [
@@ -29,6 +30,22 @@ const properties = [
 ];
 
 const Index = () => {
+  const [location, setLocation] = useState("");
+  const [priceRange, setPriceRange] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [filteredProperties, setFilteredProperties] = useState(properties);
+
+  const handleSearch = () => {
+    let filtered = properties.filter((property) => {
+      return (
+        property.title.toLowerCase().includes(location.toLowerCase()) &&
+        property.price.includes(priceRange) &&
+        property.title.toLowerCase().includes(propertyType.toLowerCase())
+      );
+    });
+    setFilteredProperties(filtered);
+  };
+
   return (
     <Box>
       <Box as="nav" bg="blue.600" color="white" p={4}>
@@ -44,8 +61,35 @@ const Index = () => {
       <Container maxW="container.xl" py={8}>
         <Heading as="h1" size="xl" mb={8}>Find Your Perfect Rental</Heading>
 
+        <Flex mb={4}>
+          <Input
+            placeholder="Search by location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            mr={4}
+          />
+          <Select
+            placeholder="Select price range"
+            value={priceRange}
+            onChange={(e) => setPriceRange(e.target.value)}
+            mr={4}
+          >
+            <option value="$80/night">$80/night</option>
+            <option value="$120/night">$120/night</option>
+            <option value="$350/night">$350/night</option>
+            <option value="$500/night">$500/night</option>
+          </Select>
+          <Input
+            placeholder="Search by property type"
+            value={propertyType}
+            onChange={(e) => setPropertyType(e.target.value)}
+            mr={4}
+          />
+          <Button colorScheme="blue" onClick={handleSearch}>Search</Button>
+        </Flex>
+
         <SimpleGrid columns={{ base: 1, md: 2, lg: 4 }} spacing={10}>
-          {properties.map((property) => (
+          {filteredProperties.map((property) => (
             <Box key={property.id} borderWidth="1px" borderRadius="lg" overflow="hidden">
               <Image src={property.image} alt={property.title} />
 
